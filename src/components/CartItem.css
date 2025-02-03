@@ -1,0 +1,32 @@
+.quantity-control {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+  }
+  
+  .quantity-control label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .quantity-button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 0 5px;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .quantity-button:hover {
+    background: #0056b3;
+  }
+  
+  .quantity-number {
+    font-size: 16px;
+    min-width: 30px;
+    text-align: center;
+  }
+  
