@@ -112,8 +112,15 @@ The application should now be running at [http://localhost:3000](http://localhos
 5. Push to the branch (`git push origin feature/YourFeature`).
 6. Open a Pull Request.
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+Author
+
+PRASHANT KUSHWAHA
+
+License
+
+MIT License
+
+Copyright (c) 2025 PRASHANT KUSHWAHA
 
 ## Acknowledgements
 - **Dummy JSON API** for providing the mock product data.
