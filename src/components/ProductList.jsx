@@ -1,88 +1,97 @@
-// ProductList component displays a list of products and handles adding them to the cart
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
-import { setProducts, addToCart } from '../store/actions/cartActions'; // Import Redux actions
-import './ProductList.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { setProducts, addToCart } from "../store/actions/cartActions"; // Import Redux actions
+import "./ProductList.css";
 
 const ProductList = () => {
-  // State for loading, error, and search query
-  const [loading, setLoading] = useState(false); // For tracking loading state
-  const [error, setError] = useState(''); // For tracking error state
-  const [searchQuery, setSearchQuery] = useState(''); // For storing search input value
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // Error state
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Redux hooks to access the cart items and products from the store
   const dispatch = useDispatch();
-  const cartItems = useSelector(state => state.cart.items) || []; // Cart items from Redux store
-  const products = useSelector(state => state.cart.products) || []; // Products from Redux store
-  
-  // Filter products based on search query (ensures products is always an array)
+  const cartItems = useSelector((state) => state.cart.items) || [];
+  const products = useSelector((state) => state.cart.products) || [];
+
+  // Filter products based on search query
   const filteredProducts = Array.isArray(products)
-    ? products.filter(product =>
-        product.title.toLowerCase().includes(searchQuery.toLowerCase()) // Filter products by title
+    ? products.filter((product) =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
 
-  // Fetch products from API on component mount
+  // Fetch products from DummyJSON API
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true); // Set loading to true when starting fetch
+      setLoading(true);
+      setError(""); // Reset error on new fetch
       try {
-        const response = await axios.get('https://fakestoreapi.com/products');
-        dispatch(setProducts(response.data)); // Dispatch action to set products in Redux store
+        const response = await axios.get("https://dummyjson.com/products");
+        dispatch(setProducts(response.data)); // Pass entire response object (Fix inside action)
       } catch (error) {
-        console.error('Error fetching products:', error); // Log error if fetching fails
+        setError("Error fetching products. Please try again later."); // Set error if fetching fails
+        console.error("Error fetching products:", error);
       } finally {
-        setLoading(false); // Set loading to false after fetching completes
+        setLoading(false);
       }
     };
 
-    fetchProducts(); // Call the fetchProducts function on mount
+    fetchProducts();
   }, [dispatch]);
 
   // Handler for adding a product to the cart
   const handleAddToCart = (product) => {
-    dispatch(addToCart(product)); // Dispatch addToCart action
+    dispatch(addToCart(product));
   };
 
-  // Render loading or error message based on state
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading">Loading products...</div>; // Custom loading UI
+  if (error) return <div className="error">{error}</div>; // Display error message
 
   return (
     <div className="product-list">
       <h1>Product List</h1>
 
-      {/* Search input to filter products */}
+      {/* Search input */}
       <div className="search-item-components">
         <input
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search products"
         />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery("")} className="clear-search">
+            Clear
+          </button>
+        )}
       </div>
 
       <ul>
-        {/* Display products if any are found after filtering */}
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <li key={product.id}>
-              <img src={product.image} alt={product.title} height="150" width="150" />
+              <img
+                src={product.images[0]}
+                alt={product.title}
+                className="product-image"
+              />
               <h2>
                 <Link to={`/products/${product.id}`}>{product.title}</Link>
               </h2>
               <p>Price: ${product.price}</p>
 
-              {/* Only show the "Add to Cart" button if the product is not already in the cart */}
-              {!cartItems.some(item => item.id === product.id) && (
-                <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+              {!cartItems.some((item) => item.id === product.id) ? (
+                <button onClick={() => handleAddToCart(product)}>
+                  Add to Cart
+                </button>
+              ) : (
+                <button disabled>Already in Cart</button>
               )}
             </li>
           ))
         ) : (
-          <p>No products found</p> // Display if no products match the search
+          <p>No products found</p>
         )}
       </ul>
     </div>
