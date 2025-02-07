@@ -3,7 +3,7 @@ import * as actionTypes from './actionTypes'; // Ensure correct path to actionTy
 export const addToCart = (product) => {
   if (!product || !product.id) {
     console.error("Invalid product in addToCart:", product);
-    return { type: actionTypes.ADD_TO_CART, payload: {} }; // Return an empty payload for invalid data
+    return { type: actionTypes.ADD_TO_CART, payload: null }; // Avoid dispatching invalid data
   }
 
   return { 
@@ -24,7 +24,7 @@ export const removeFromCart = (productId) => {
 export const updateCartQuantity = (id, quantity) => {
   if (!id || quantity < 1) {
     console.error("Invalid data in updateCartQuantity:", { id, quantity });
-    return { type: actionTypes.UPDATE_CART_QUANTITY, payload: {} }; // Return an empty payload for invalid data
+    return { type: actionTypes.UPDATE_CART_QUANTITY, payload: null }; // Avoid dispatching invalid data
   }
 
   return { 
@@ -33,14 +33,15 @@ export const updateCartQuantity = (id, quantity) => {
   };
 };
 
-export const setProducts = (products) => {
-  if (!Array.isArray(products)) {
-    console.error("Invalid products array:", products);
+export const setProducts = (productsData) => {
+  if (!productsData || !Array.isArray(productsData.products)) {
+    console.error("Invalid products array:", productsData);
     return { type: actionTypes.SET_PRODUCTS, payload: [] }; // Default to empty array if invalid
   }
 
   return {
     type: actionTypes.SET_PRODUCTS,
-    payload: products,
+    payload: productsData.products, // ✅ Fix: Pass products array instead of whole object
   };
 };
+
