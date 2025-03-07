@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './ProductDetail.css';
+import api from './axios';
 
 const ProductDetail = () => {
   const { id } = useParams(); // Get the product ID from the URL params
@@ -14,8 +15,9 @@ const ProductDetail = () => {
     const fetchProduct = async () => {
       setLoading(true); // Set loading to true while fetching data
       try {
+        console.log("Product ID:",id);
         // Make an API call to fetch product details by ID
-        const response = await axios.get(`https://dummyjson.com/products/${id}`);
+        const response = await api.get(`/products/${id}`);
         console.log(response.data); // Log the response for debugging
         if (response.data) {
           setProduct(response.data); // Store product data if the response is valid

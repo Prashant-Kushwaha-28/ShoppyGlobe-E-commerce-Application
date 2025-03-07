@@ -1,58 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { setProducts, addToCart } from "../store/actions/cartActions"; // Import Redux actions
+import { setProducts, addToCart } from "../store/actions/cartActions";
+import api from "./axios"; // Import global axios instance
 import "./ProductList.css";
 
 const ProductList = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(""); // Error state
+  const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items) || [];
   const products = useSelector((state) => state.cart.products) || [];
 
-  // Filter products based on search query
   const filteredProducts = Array.isArray(products)
     ? products.filter((product) =>
         product.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
 
-  // Fetch products from DummyJSON API
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setError(""); // Reset error on new fetch
+      setError("");
+  
       try {
-        const response = await axios.get("https://dummyjson.com/products");
-        dispatch(setProducts(response.data)); // Pass entire response object (Fix inside action)
+        const response = await api.get("/products"); // No need to add token manually
+        console.log("API Response:", response.data); // ✅ Check API Response
+        dispatch(setProducts(response.data)); 
       } catch (error) {
-        setError("Error fetching products. Please try again later."); // Set error if fetching fails
         console.error("Error fetching products:", error);
+        setError("Error fetching products. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-
+    
     fetchProducts();
   }, [dispatch]);
 
-  // Handler for adding a product to the cart
   const handleAddToCart = (product) => {
     dispatch(addToCart(product));
   };
 
-  if (loading) return <div className="loading">Loading products...</div>; // Custom loading UI
-  if (error) return <div className="error">{error}</div>; // Display error message
+  if (loading) return <div className="loading">Loading products...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="product-list">
       <h1>Product List</h1>
-
-      {/* Search input */}
       <div className="search-item-components">
         <input
           type="text"
@@ -60,39 +57,21 @@ const ProductList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search products"
         />
-        {searchQuery && (
-          <button onClick={() => setSearchQuery("")} className="clear-search">
-            Clear
-          </button>
-        )}
+        {searchQuery && <button onClick={() => setSearchQuery("")} className="clear-search">Clear</button>}
       </div>
-
       <ul>
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <li key={product.id}>
-              <img
-                src={product.images[0]}
-                alt={product.title}
-                className="product-image"
-              />
-              <h2>
-                <Link to={`/products/${product.id}`}>{product.title}</Link>
-              </h2>
-              <p>Price: ${product.price}</p>
-
-              {!cartItems.some((item) => item.id === product.id) ? (
-                <button onClick={() => handleAddToCart(product)}>
-                  Add to Cart
-                </button>
-              ) : (
-                <button disabled>Already in Cart</button>
-              )}
-            </li>
-          ))
-        ) : (
-          <p>No products found</p>
-        )}
+        {filteredProducts.map((product) => (
+          <li key={product._id}>
+            <img src={product.images} alt={product.title} className="product-image" />
+            <h2><Link to={`/products/${product._id}`}>{product.title}</Link></h2>
+            <p>Price: ${product.price}</p>
+            {!cartItems.some((item) => item._id === product._id) ? (
+              <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+            ) : (
+              <button disabled>Already in Cart</button>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );

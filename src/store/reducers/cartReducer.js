@@ -2,12 +2,14 @@ import { ADD_TO_CART, REMOVE_FROM_CART, UPDATE_CART_QUANTITY, SET_PRODUCTS } fro
 
 const initialState = {
   items: [],
-  products: []
+  products: [],
+  cart: [],
 };
 
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_PRODUCTS:
+    case "SET_PRODUCTS":
+      console.log("Setting Products in Redux:", action.payload); // ✅ Debug Redux
       return { ...state, products: action.payload || [] };
 
     case ADD_TO_CART:

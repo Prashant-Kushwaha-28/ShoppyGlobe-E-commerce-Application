@@ -10,14 +10,15 @@ const useProductList = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/products`);
-        setProducts(response.data.products);
+        const response = await axios.get("http://localhost:5000/api"); // ✅ Fixed URL
+        setProducts(response.data); // ✅ Pass response.data directly
       } catch (error) {
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchProducts();
   }, []);
 
